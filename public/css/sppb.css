@@ -1,0 +1,54 @@
+body {
+    font-family: 'Ubuntu', sans-serif;
+    background: #f7f7f7;
+    /*margin-bottom: 60px;*/
+}
+
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* Negative indent footer by its height */
+    margin: 0 auto -60px;
+    /* Pad bottom by footer height */
+    padding: 0 0 60px;
+}
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    background-color: #fff;
+    padding: 2px 16px;
+    border:1px solid #9d9d9d; 
+}
+
+.fa-btn {
+    margin-right: 6px;
+}
+
+.footer{
+    position: fixed;
+    bottom: 0;
+    width:100%;
+    height: 60px;
+    background-color: #373a3c!important;
+}
+
+.footer-text{
+    margin: 20px;
+    color: #9d9d9d;
+}
+
+.panel-home{
+    min-height: 150px;
+}
+
+.footer-link{
+    color: #9d9d9d;
+}
+
+.dataTables_wrapper{
+    padding: 10px;
+}
+
+
