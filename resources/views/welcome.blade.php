@@ -16,6 +16,7 @@
 
     <hr>
     
+    @role('Admin Hospital')
     <form class="form-horizontal" role="form" method="POST" action="{{ url('/store') }}">
         {{ csrf_field() }}
 
@@ -28,7 +29,7 @@
             </div>
         </div>
     </form>
-    
+    @endrole
 
     <div class="marquee">
         <p>{{$ann->description}}</p>
