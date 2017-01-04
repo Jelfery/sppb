@@ -58,7 +58,7 @@
          </div>
          <br>
          <div content>
-            <button type="button" class="btn btn-default btn-lg" href="{{ url('/') }}"><i class="fa fa-btn fa-angle-left fa-fw"></i>&nbsp Back to Home</button>
+            <a type="button" class="btn btn-default btn-lg" href="{{ url('/') }}"><i class="fa fa-btn fa-angle-left fa-fw"></i>&nbsp Back to Home</a>
          </div>
             
       </div>

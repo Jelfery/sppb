@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use Illuminate\Http\Request;
 use View;
+use Auth;
+use App\User;
+use App\Announcement;
 
 class HomeController extends Controller
 {
@@ -25,9 +28,26 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $ann = Announcement::find(1);
+
         $date = date("d-m-Y");
         $day = date("l");
 
-        return View::make('welcome', compact('date', 'day'));
+        $user = User::with('hospital')->where('id', '=', Auth::user()->id)->first();
+        $role = $user->roles()->first();
+       
+        return View::make('welcome', compact('date', 'day', 'user', 'role', 'ann'));
+    }
+
+    public function store(Request $request){
+         
+        // $request->description;
+        $ann = Announcement::find(1);
+
+        $ann->description = $request->announce;
+
+        $ann->save();
+
+        return redirect('/');
     }
 }

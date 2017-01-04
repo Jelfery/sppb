@@ -92,8 +92,11 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'file' => [
+            'required' => 'Sila pilih fail',
+        ],
+        'uploader' => [
+            'required' => 'Sila isi nama pegawai',
         ],
     ],
 

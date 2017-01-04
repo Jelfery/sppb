@@ -16,7 +16,6 @@ class RoleSeeder extends Seeder
         $this->command->info("\nRebuild roles table");
 
         $roles = [
-        	['name' => 'Admin', 'display_name' => 'Admin', 'description' => 'Admin can control everything'],
         	['name' => 'Admin Hospital', 'display_name' => 'Admin Hospital', 'description' => 'Admin Hospital can see all the records'],
         	['name' => 'Normal Hospital', 'display_name' => 'Normal Hospital', 'description' => 'Normal Hospital can see their own records'],
         ];

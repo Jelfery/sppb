@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Exception;
 use DateTime;
 use Validator;
+use App\Template;
 use App\Http\Requests;
 use App\Record;
 use App\User;
@@ -16,6 +17,7 @@ use View;
 use File;
 use Zipper;
 use Auth;
+use Illuminate\Support\Facades\Storage;
 
 /*
  *	Need to be done:
@@ -40,10 +42,12 @@ class BebanKerjaController extends Controller
 
     public function index(){
 
-        $user = Auth::user()->name;
+        $user = User::FindOrFail(Auth::user()->id);
 
-        if ($user == 'elizabeth') {
-            
+        $templates = Template::where('label_id', '=', $this->label->id)->get();
+
+        if ($user->hasRole('Admin Hospital')) {
+
             // get all files from all users
             // label_id = 1 for bebankerja
             $records = Record::with('user.hospital')->with('label')->where('label_id', '=', $this->label->id)->get();
@@ -62,11 +66,14 @@ class BebanKerjaController extends Controller
             $dateY = date("Y", strtotime($record->created_at));
             $record->year = $dateY;
         }
-    	
-    	// $records = Record::with('user.hospital')->with('label')->get();
-        // $message = 'test';
 
-    	return View::make('bebankerja.index', compact('records'));
+        foreach ($templates as $template) {
+            $dateM = date("m", strtotime($template->created_at));
+            $dateObj   = DateTime::createFromFormat('!m', $dateM);
+            $template->month = $dateObj->format('F'); // March
+        }
+
+    	return View::make('bebankerja.index', compact('records', 'templates', 'user'));
     }
 
     public function store(Request $request){
@@ -96,9 +103,9 @@ class BebanKerjaController extends Controller
         $filename = $user->hospital->short_name.'_bebankerja_'.$short_month.$year.'.'.$file->getClientOriginalExtension();
 
         // Move Uploaded File
-        $destinationPath = 'records/bebankerja/'.Carbon::now()->year.'/'.$full_month;
+        $destinationPath = 'bebankerja/'.Carbon::now()->year.'/'.$full_month.'/'.$filename;
 
-        $file->move($destinationPath, $filename);
+        Storage::disk('records')->put($destinationPath, File::get($file));
 
         // save file's information to files table on db
         $files = Record::create([
@@ -130,12 +137,14 @@ class BebanKerjaController extends Controller
         $year = $file->created_at->format('Y');
 
     	// PDF file is stored under sppb/records/bebankerja
-    	$path = public_path(). "/records/bebankerja/".$year.'/'.$month.'/'.$file->name;
+    	$path = storage_path()."/records/bebankerja/".$year.'/'.$month.'/'.$file->name;
+
+        // dd($path) ;
 
     	$headers = array('Content-Type' => $file->mime);
 
     	// check if file exist
-    	if(File::exists($path)){
+    	if(file_exists($path)){
     		
     		// return the actual file to the user
     		return response()->download($path, $file->name, $headers);
@@ -146,6 +155,30 @@ class BebanKerjaController extends Controller
     	
     	}
 		
+    }
+
+    // download template from storage
+    public function getTemplate($id){
+
+        $temp = Template::where('id', '=', $id)->with('label')->firstOrFail();
+
+        // template file is stored under storage/templates/bebankerja
+        $path = storage_path()."/templates/BEBANKERJA/".$temp->name;
+
+        $headers = array('Content-Type' => $temp->mime);
+
+        // check if file exist
+        if(file_exists($path)){
+            
+            // return the actual file to the user
+            return response()->download($path, $temp->name, $headers);
+        
+        } else{
+            
+            dd('File is not exists.');
+        
+        }
+        
     }
 
     // delete file records on storage and database
@@ -159,7 +192,7 @@ class BebanKerjaController extends Controller
         $year = $file->created_at->format('Y');
 
         // PDF file is stored under sppb/records/bebankerja
-        $path = public_path(). "/records/bebankerja/".$year.'/'.$month.'/'.$file->name;
+        $path = storage_path(). "/records/bebankerja/".$year.'/'.$month.'/'.$file->name;
 
         File::Delete($path);
 
@@ -181,7 +214,7 @@ class BebanKerjaController extends Controller
     public function getCollection(Request $request){
 
         // path to folder based on selected year
-        $path = public_path(). "/records/bebankerja/".$request->year;
+        $path = storage_path(). "/records/bebankerja/".$request->year;
 
         // check if the directory exist
         if (File::isDirectory($path)) {
@@ -192,7 +225,7 @@ class BebanKerjaController extends Controller
             $filename = 'bebankerja_'.$request->year.$file_extension;
 
             // path to the new zip file
-            $zipPath = public_path()."/records/bebankerja/collection/".$filename;
+            $zipPath = storage_path()."/records/bebankerja/collection/".$filename;
 
             // create zip file
             Zipper::make($zipPath)->add($path);

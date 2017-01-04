@@ -14,11 +14,10 @@ class DatabaseSeeder extends Seeder
     	DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
     	$this->call(HospitalsSeeder::class);
+        $this->call(RoleSeeder::class);
         $this->call(UsersTableSeeder::class);
         $this->call(LabelsTableSeeder::class);
         $this->call(RecordsSeeder::class);
-        $this->call(RoleSeeder::class);
-        
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;'); 
     }

@@ -54,6 +54,16 @@ return [
             'visibility' => 'public',
         ],
 
+        'upload' => [
+            'driver' => 'local',
+            'root' => storage_path('templates'),
+        ],
+
+        'records' => [
+            'driver' => 'local',
+            'root' => storage_path('records'),
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => 'your-key',

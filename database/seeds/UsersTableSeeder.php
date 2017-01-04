@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\User;
+use App\Role;
 
 class UsersTableSeeder extends Seeder
 {
@@ -17,11 +18,17 @@ class UsersTableSeeder extends Seeder
 
         $users = [
         	['name' => 'elizabeth', 'email' => 'elizabeth@gov.my', 'password' => bcrypt('elizabeth'), 'hospital_id' => '1'],
-        	['name' => 'tawau', 'email' => 'tawau@gov.my', 'password' => bcrypt('tawau'), 'hospital_id' => '5'],
-        	['name' => 'sandakan', 'email' => 'sandakan@gov.my', 'password' => bcrypt('sandakan'), 'hospital_id' => '4'],
         ];
 
         foreach($users as $key => $user)
             User::create($user);
+
+        // user id = 1, hospital queen elizabeth
+        $user = User::find(1);
+
+        // role id = 2, admin hospital
+        $role = Role::find(2);
+
+        $user->attachRole($role);
     }
 }

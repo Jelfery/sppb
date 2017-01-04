@@ -6,6 +6,7 @@ use Illuminate\Http\Response;
 use Exception;
 use DateTime;
 use Validator;
+use App\Template;
 use App\Http\Requests;
 use App\Record;
 use App\User;
@@ -15,6 +16,7 @@ use View;
 use File;
 use Zipper;
 use Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Laporan552MController extends Controller
 {
@@ -32,12 +34,14 @@ class Laporan552MController extends Controller
 
     public function index(){
 
-        $user = Auth::user()->name;
+        $user = User::FindOrFail(Auth::user()->id);
 
-        if ($user == 'elizabeth') {
-            
+        $templates = Template::where('label_id', '=', $this->label->id)->get();
+
+        if ($user->hasRole('Admin Hospital')) {
+
             // get all files from all users
-            // label_id = 3 for laporan 552M
+            // label_id = 1 for bebankerja
             $records = Record::with('user.hospital')->with('label')->where('label_id', '=', $this->label->id)->get();
         
         } else {
@@ -45,19 +49,23 @@ class Laporan552MController extends Controller
             // get all files associated with the user
             $records = Record::with('user.hospital')->where('user_id', '=', Auth::user()->id)->with('label')->where('label_id', '=', $this->label->id)->get();
         }
-    	
+        
+        foreach ($records as $record) {
+            $dateM = date("m", strtotime($record->created_at));
+            $dateObj   = DateTime::createFromFormat('!m', $dateM);
+            $record->month = $dateObj->format('F'); // March
 
-    	foreach ($records as $record) {
-            $date = date("m", strtotime($record->created_at));
-    		$dateObj   = DateTime::createFromFormat('!m', $date);
-			$record->month = $dateObj->format('F'); // March
-            // dd($dateObj->format('F'));
+            $dateY = date("Y", strtotime($record->created_at));
+            $record->year = $dateY;
         }
-    	
-    	// $records = Record::with('user.hospital')->with('label')->get();
-        // $message = 'test';
 
-    	return View::make('552M.index', compact('records'));
+        foreach ($templates as $template) {
+            $dateM = date("m", strtotime($template->created_at));
+            $dateObj   = DateTime::createFromFormat('!m', $dateM);
+            $template->month = $dateObj->format('F'); // March
+        }
+
+        return View::make('552M.index', compact('records', 'templates', 'user'));
     }
 
     public function store(Request $request){
@@ -87,9 +95,9 @@ class Laporan552MController extends Controller
         $filename = $user->hospital->short_name.'_552M_'.$short_month.$year.'.'.$file->getClientOriginalExtension();
 
         // Move Uploaded File
-        $destinationPath = 'records/552M/'.Carbon::now()->year.'/'.$full_month;
+        $destinationPath = 'dummyvot/'.Carbon::now()->year.'/'.$full_month.'/'.$filename;
 
-        $file->move($destinationPath, $filename);
+        Storage::disk('records')->put($destinationPath, File::get($file));
 
         // save file's information to files table on db
         $files = Record::create([
@@ -116,12 +124,12 @@ class Laporan552MController extends Controller
 
     	$file = Record::where('id', '=', $id)->firstOrFail();
 
-        $month = $this->getMonthName($file->created_at->format('m'));
+        $month = $this->getMonthFullName($file->created_at->format('m'));
 
         $year = $file->created_at->format('Y');
 
     	// PDF file is stored under sppb/records/552M
-    	$path = public_path(). "/records/552M/".$year.'/'.$month.'/'.$file->name;
+    	$path = storage_path(). "/records/552M/".$year.'/'.$month.'/'.$file->name;
 
     	$headers = array('Content-Type' => $file->mime);
 
@@ -133,7 +141,11 @@ class Laporan552MController extends Controller
     	
     	} else{
     		
-    		dd('File is not exists.');
+    		$messages = 'Fail tidak wujud';
+
+            \Session::flash('file_error', $messages);
+
+            return redirect('552M');
     	
     	}
 		
@@ -145,12 +157,12 @@ class Laporan552MController extends Controller
 
         $file = Record::where('id', '=', $id)->firstOrFail();
 
-        $month = $this->getMonthName($file->created_at->format('m'));
+        $month = $this->getMonthFullName($file->created_at->format('m'));
 
         $year = $file->created_at->format('Y');
 
         // PDF file is stored under sppb/records/552M
-        $path = public_path(). "/records/552M/".$year.'/'.$month.'/'.$file->name;
+        $path = storage_path(). "/records/552M/".$year.'/'.$month.'/'.$file->name;
 
         File::Delete($path);
 
@@ -172,7 +184,7 @@ class Laporan552MController extends Controller
     public function getCollection(Request $request){
 
         // path to folder based on selected year
-        $path = public_path(). "/records/552M/".$request->year;
+        $path = storage_path(). "/records/552M/".$request->year;
 
         // check if the directory exist
         if (File::isDirectory($path)) {
@@ -183,7 +195,7 @@ class Laporan552MController extends Controller
             $filename = '552M_'.$request->year.$file_extension;
 
             // path to the new zip file
-            $zipPath = public_path()."/records/552M/collection/".$filename;
+            $zipPath = storage_path()."/records/552M/collection/".$filename;
 
             // create zip file
             Zipper::make($zipPath)->add($path);
@@ -211,7 +223,7 @@ class Laporan552MController extends Controller
     }
 
     // this function recieve month in integer and return the month's name in string
-    public function getMonthName($month){
+    public function getMonthFullName($month){
     	return date("F", mktime(0, 0, 0, $month, 1));
     }
 

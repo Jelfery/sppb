@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Laravel</title>
+    <title>SPPB</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
@@ -115,6 +115,7 @@
                 <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
                 @role(['admin', 'Admin Hospital'])
                 <li><a href="{{ url('/user') }}"><i class="fa fa-btn fa-user"></i>Pengguna</a></li>
+                <li><a href="{{ url('/template') }}"><i class="fa fa-btn fa-file-excel-o"></i>Borang Template</a></li>
                 @endrole
             </ul>
         </li>
@@ -128,7 +129,7 @@
 </div>
     <footer class="footer">
       <div class="container">
-        <p class="footer-text">Copyright 2016 © <a href="https://ahmadzt.github.io/" class="footer-link">SPPB SABAH</a></p>
+        <p class="footer-text">Copyright 2016 © SPPB Sabah</p>
     </div>
     </footer>
 

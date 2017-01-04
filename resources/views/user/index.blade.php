@@ -15,7 +15,6 @@
 			<table class="table table-striped" id="myTable">
 				<thead class="primary">
 					<tr>
-						<th>No.</th>
 						<th>Hospital</th>
 						<th>Nama</th>
 						<th>Email</th>
@@ -24,10 +23,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<?php $i = 1; ?>
 					@foreach($users as $user)
 					<tr>
-						<td><?php echo($i++); ?></td>
 						<td>{{ $user->hospital->name }}</td>
 						<td>{{ $user->name }}</td>
 						<td>{{ $user->email }}</td>

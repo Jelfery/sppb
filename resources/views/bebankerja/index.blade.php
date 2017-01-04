@@ -9,7 +9,7 @@
 	<!-- List of Record Section -->
 	<div class="card">
 		<h3> Senarai Rekod</h3>
-		
+
 		<br>
 
 		<div class="panel panel-default">
@@ -28,7 +28,7 @@
 					<tbody>
 						@forelse($records as $record)
 						<tr>
-							<td>{{ $record->name." ".$record->id }}</td>
+							<td>{{ $record->name }}</td>
 							<td>{{ $record->user->hospital->name }}</td>
 							<td>{{ $record->month }} {{ $record->year }}</td>
 							<td>{{ $record->label->name }}</td>
@@ -46,11 +46,11 @@
 								<div class="modal-content">
 									<div class="modal-header">
 										<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-										<h4 class="modal-title">Delete Record</h4>
+										<h4 class="modal-title">Hapus Laporan</h4>
 									</div>
 									<div class="modal-body">
 										<p>
-											Are you sure to delete this record with id {{$record->id}}? 
+											Anda pasti untuk hapuskan laporan ini? 
 										</p>
 									</div>
 									<div class="modal-footer">
@@ -106,6 +106,37 @@
 	<div class="card" style="margin-bottom: 16px">
 		<h3>Muat Naik Fail</h3>
 
+		<div class="panel panel-default">
+			<div class="table-responsive">
+				<table class="table table-hovered">
+					<thead>
+						<tr>
+							<th>Nama Aset</th>
+							<th>Tarikh</th>
+							<th>Juru Muat Naik</th>
+							<th>Aksi</th>
+						</tr>
+					</thead>
+					<tbody>
+						@forelse($templates as $template)
+						<tr>
+							<td>{{$template->name}}</td>
+							<td>{{$template->month}}</td>
+							<td>{{$template->uploader}}</td>
+							<td>
+								<a href="{{route('bebankerja::getTemplate', $template->id)}}" class="btn btn-primary btn-sm" role="button">Muat Turun Fail</a>
+							</td>
+						</tr>
+						@empty
+						<tr>
+							<td colspan="6" style="text-align: center"><i>Tiada Aset</i></td>
+						</tr>
+						@endforelse
+					</tbody>
+				</table>
+			</div>
+		</div>
+
 		<br>
 
 		@if (count($errors) > 0)
@@ -121,7 +152,7 @@
 		{!! Form::open( ['route' => 'bebankerja::store', 'novalidate' => 'novalidate', 'class' => 'form', 'files' => true]) !!}
 		<div class="form-group">
 			{!! Form::label('uploader', 'Nama') !!}
-			{!! Form::text('uploader', null, ['class' => 'form-control', 'placeholder' => 'Nama Pegawai Bertugas']) !!}
+			{!! Form::text('uploader', $user->name, ['class' => 'form-control', 'placeholder' => 'Nama Pegawai Bertugas']) !!}
 		</div>
 		<div class="form-group">
 			{!! Form::label('file', 'Fail', ['class' => '']) !!}

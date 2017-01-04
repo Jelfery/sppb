@@ -1,6 +1,7 @@
 body {
     font-family: 'Ubuntu', sans-serif;
     background: #f7f7f7;
+    overflow-x: hidden;
     /*margin-bottom: 60px;*/
 }
 
@@ -40,7 +41,7 @@ body {
 }
 
 .panel-home{
-    min-height: 150px;
+    min-height: 230px;
 }
 
 .footer-link{
@@ -50,5 +51,47 @@ body {
 .dataTables_wrapper{
     padding: 10px;
 }
+
+.marquee { 
+}
+
+.marquee p{
+   color: red;
+   height: 100%;
+   padding: 10px 0px 10px;
+   line-height: 15px;
+   text-align: center;
+   /* Starting position */
+   -moz-transform:translateX(100%);
+   -webkit-transform:translateX(100%);    
+   transform:translateX(100%);
+   /* Apply animation to this element */  
+   -moz-animation: example1 20s linear infinite;
+   -webkit-animation: example1 20s linear infinite;
+   animation: example1 20s linear infinite;
+}
+/* Move it (define the animation) */
+@-moz-keyframes example1 {
+   0%   { -moz-transform: translateX(100%); }
+   100% { -moz-transform: translateX(-100%); }
+}
+@-webkit-keyframes example1 {
+   0%   { -webkit-transform: translateX(100%); }
+   100% { -webkit-transform: translateX(-100%); }
+}
+@keyframes example1 {
+   0%   { 
+       -moz-transform: translateX(100%); /* Firefox bug fix */
+       -webkit-transform: translateX(100%); /* Firefox bug fix */
+       transform: translateX(100%);       
+   }
+   100% { 
+       -moz-transform: translateX(-100%); /* Firefox bug fix */
+       -webkit-transform: translateX(-100%); /* Firefox bug fix */
+       transform: translateX(-100%); 
+   }
+}
+
+
 
 

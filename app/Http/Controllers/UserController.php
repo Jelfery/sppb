@@ -47,28 +47,28 @@ class UserController extends Controller
             ]);
 
         $input = $request->all();
+        
         $input['password'] = bcrypt($input['password']);
         
-        // validate if the selected hospital is already exist
-        if (User::where('hospital_id', '=', $input['hospital_id'])->exists()) {
-            
-            $messages = 'User for selected hospital already exist';
+        $user = User::create($input);
 
-            \Session::flash('error_message', $messages);
+        $role = Role::where('id', $request->roles)->first();
 
-            return redirect('user/create');
-        
-        } else {
-            
-            $user = User::create($input);
+        $user->attachRole($role);
 
-            $role = Role::where('id', $request->roles)->first();
+        return redirect('user')->with('success','User created successfully');
 
-            $user->attachRole($role);
-
-            return redirect('user')->with('success','User created successfully');
-
-        }
+        // // validate if the selected hospital is already exist
+        // if (User::where('hospital_id', '=', $input['hospital_id'])->exists()) {    
+        //     $messages = 'User for selected hospital already exist';
+        //     \Session::flash('error_message', $messages);
+        //     return redirect('user/create');
+        // } else {
+        //     $user = User::create($input);
+        //     $role = Role::where('id', $request->roles)->first();
+        //     $user->attachRole($role);
+        //     return redirect('user')->with('success','User created successfully');
+        // }
     }
 
     public function delete($id){

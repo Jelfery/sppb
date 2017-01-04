@@ -15,15 +15,38 @@
     </div>
 
     <hr>
+    
+    <form class="form-horizontal" role="form" method="POST" action="{{ url('/store') }}">
+        {{ csrf_field() }}
+
+        <div class="form-group">
+            <div class="col-xs-12 col-md-11" style="margin-bottom: 5px">
+                <input id="announce" type="text" name="announce" class="form-control" value="{{ $ann->description }}" placeholder="Pengumuman">
+            </div>
+            <div class="col-xs-12 col-md-1">
+                <button type="submit" class="btn btn-primary form-control">Umum</button>
+            </div>
+        </div>
+    </form>
+    
+
+    <div class="marquee">
+        <p>{{$ann->description}}</p>
+    </div>
+
+    <hr>
 
     <div class="row">
         <div class="col-md-3">
             <div class="panel panel-info panel-home">
                 <div class="panel-heading">
-                    <span class = "glyphicon glyphicon-user"></span> &nbspProfil Pengguna
+                    <span class = "fa fa-btn fa-user"></span> &nbspProfil Pengguna
                 </div>
                 <div class="panel-body">
-                    <span class = "glyphicon glyphicon-envelope"></span>&nbsp elizabeth@gmail.com
+                    <p><i class="fa fa-btn fa-user"></i>{{$user->name}}</p>
+                    <p><i class = "fa fa-btn fa-envelope-o"></i>{{$user->email}}</p>
+                    <p><i class = "fa fa-btn fa-circle-o"></i>{{$role->name}}</p>
+                    <p><i class = "fa fa-btn fa-hospital-o"></i>{{$user->hospital->name}}</p>
                 </div>
             </div>    
         </div>
@@ -109,15 +132,5 @@
             </div>    
         </div>
     </div>
-
-    <!-- <div class="col-md-3">
-        <div class="card">
-            <div class="container">
-            <span class = "glyphicon glyphicon-search"></span>
-                <h4><b>John Doe</b></h4> 
-                <p>Architect & Engineer</p> 
-            </div>
-        </div>    
-    </div> -->
 </div>
 @endsection
