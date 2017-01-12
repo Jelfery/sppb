@@ -46,7 +46,7 @@
                 <div class="panel-body">
                     <p><i class="fa fa-btn fa-user"></i>{{$user->name}}</p>
                     <p><i class = "fa fa-btn fa-envelope-o"></i>{{$user->email}}</p>
-                    <p><i class = "fa fa-btn fa-circle-o"></i>{{$role->name}}</p>
+                    <p><i class = "fa fa-btn fa-circle-o"></i><label class="label label-success">{{$role->name}}</label></p>
                     <p><i class = "fa fa-btn fa-hospital-o"></i>{{$user->hospital->name}}</p>
                 </div>
             </div>    

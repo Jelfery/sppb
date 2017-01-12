@@ -38,6 +38,8 @@ class BebanKerjaController extends Controller
         $this->label_name = 'BEBANKERJA';
 
         $this->label = Label::where('name', '=', $this->label_name)->first();
+
+        $this->hospital_id = 0;
 	}
 
     public function index(){
@@ -55,7 +57,13 @@ class BebanKerjaController extends Controller
         } else {
 
             // get all files associated with the user
-            $records = Record::with('user.hospital')->where('user_id', '=', Auth::user()->id)->with('label')->where('label_id', '=', $this->label->id)->get();
+            $records = Record::with('user.hospital')
+            ->whereHas('user.hospital',function($query){ 
+                $query->where('hospital_id', $this->hospital_id);
+            })
+            ->with('label')
+            ->where('label_id', '=', $this->label->id)
+            ->get();
         }
     	
     	foreach ($records as $record) {
@@ -107,14 +115,29 @@ class BebanKerjaController extends Controller
 
         Storage::disk('records')->put($destinationPath, File::get($file));
 
-        // save file's information to files table on db
-        $files = Record::create([
-            'name' => $filename,
-            'mime' => $filemime,
-            'uploader' => $request->uploader,
-            'user_id' => Auth::user()->id,
-            'label_id' => $this->label->id
-            ]);
+        // check if the record is already existed
+        if ($record = Record::where('name', $filename)->first()) {
+            
+            $record->name = $filename;
+            $record->mime = $filemime;
+            $record->uploader = $request->uploader;
+            $record->user_id = Auth::user()->id;
+            $record->label_id = $this->label->id;
+
+            $record->save();
+        
+        } else {
+
+            // save file's information to files table on db
+            $files = Record::create([
+                'name' => $filename,
+                'mime' => $filemime,
+                'uploader' => $request->uploader,
+                'user_id' => Auth::user()->id,
+                'label_id' => $this->label->id
+                ]);
+
+        }
 
         return redirect('bebankerja');
 

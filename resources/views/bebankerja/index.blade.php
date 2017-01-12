@@ -35,7 +35,7 @@
 							<td>{{ $record->uploader }}</td>
 							<td>
 								<a href="{{route('bebankerja::getRecord', $record->id)}}" class="btn btn-primary btn-sm" role="button">Muat Turun Fail</a>
-								&nbsp
+								@role('Admin Hospital')
 								<a href="#deleteModal-{{ $record->id }}" class="btn btn-danger btn-sm" role="button" data-toggle="modal">Hapus Fail</a>
 							</td>
 						</tr>
@@ -62,6 +62,7 @@
 								</div>
 							</div>
 						</div>
+						@endrole
 
 						@empty
 						<tr>
@@ -154,6 +155,12 @@
 			{!! Form::label('uploader', 'Nama') !!}
 			{!! Form::text('uploader', $user->name, ['class' => 'form-control', 'placeholder' => 'Nama Pegawai Bertugas']) !!}
 		</div>
+
+		<!-- peringatan kepada pengguna -->
+		<div class="alert alert-danger">
+			<li>Sila pastikan anda menutup fail terlebih dahulu sebelum memuat naik</li>
+		</div>
+		
 		<div class="form-group">
 			{!! Form::label('file', 'Fail', ['class' => '']) !!}
 			{!! Form::file('file', null, ['class' => 'form-control']) !!}

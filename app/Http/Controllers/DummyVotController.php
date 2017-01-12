@@ -31,24 +31,35 @@ class DummyVotController extends Controller
         $this->label_name = 'BAJET_DUMMYVOT';
 
         $this->label = Label::where('name', '=', $this->label_name)->first();
+
+        $this->hospital_id = 0;
 	}
 
     public function index(){
 
-        $user = User::FindOrFail(Auth::user()->id);
+        // $user = User::FindOrFail(Auth::user()->id);
+
+        $user = User::where('id', '=', Auth::user()->id)->with('hospital')->first();
 
         $templates = Template::where('label_id', '=', $this->label->id)->get();
+
+        $this->hospital_id = $user->hospital->id;
 
         if ($user->hasRole('Admin Hospital')) {
 
             // get all files from all users
-            // label_id = 1 for bebankerja
             $records = Record::with('user.hospital')->with('label')->where('label_id', '=', $this->label->id)->get();
         
         } else {
 
             // get all files associated with the user
-            $records = Record::with('user.hospital')->where('user_id', '=', Auth::user()->id)->with('label')->where('label_id', '=', $this->label->id)->get();
+            $records = Record::with('user.hospital')
+            ->whereHas('user.hospital',function($query){ 
+                $query->where('hospital_id', $this->hospital_id);
+            })
+            ->with('label')
+            ->where('label_id', '=', $this->label->id)
+            ->get();
         }
         
         foreach ($records as $record) {
@@ -100,14 +111,29 @@ class DummyVotController extends Controller
 
         Storage::disk('records')->put($destinationPath, File::get($file));
 
-        // save file's information to files table on db
-        $files = Record::create([
-            'name' => $filename,
-            'mime' => $filemime,
-            'uploader' => $request->uploader,
-            'user_id' => Auth::user()->id,
-            'label_id' => $this->label->id
-            ]);
+        // check if the record is already existed
+        if ($record = Record::where('name', $filename)->first()) {
+            
+            $record->name = $filename;
+            $record->mime = $filemime;
+            $record->uploader = $request->uploader;
+            $record->user_id = Auth::user()->id;
+            $record->label_id = $this->label->id;
+
+            $record->save();
+        
+        } else {
+
+            // save file's information to files table on db
+            $files = Record::create([
+                'name' => $filename,
+                'mime' => $filemime,
+                'uploader' => $request->uploader,
+                'user_id' => Auth::user()->id,
+                'label_id' => $this->label->id
+                ]);
+
+        }
 
         return redirect('dummyvot');
 
@@ -144,6 +170,7 @@ class DummyVotController extends Controller
     		
     		$messages = 'Fail tidak wujud';
 
+            // set session error message
             \Session::flash('file_error', $messages);
 
             return redirect('dummyvot');
@@ -173,6 +200,7 @@ class DummyVotController extends Controller
         
         } else{
             
+            // delete record in db
             Record::destroy($id);
         
         }
